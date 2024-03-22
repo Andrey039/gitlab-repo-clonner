@@ -1,0 +1,27 @@
+name: Build and Push Docker image
+
+on:
+  push:
+    branches:
+      - main  # Указывает на то, что действие будет выполняться при пуше в ветку main
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest  # Выбираем последнюю версию Ubuntu как среду выполнения
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2  # Действие для проверки кода из репозитория
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1  # Действие для входа в Docker Hub
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Имя пользователя Docker Hub, сохраненное в секретах репозитория
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Пароль от Docker Hub, сохраненный в секретах репозитория
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2  # Действие для сборки и пуша образа
+        with:
+          context: .  # Контекст сборки - текущая директория
+          file: ./Dockerfile  # Путь к Dockerfile относительно контекста сборки
+          push: true  # Указывает на необходимость пуша образа после сборки
+          tags: maslovkng/clone_group_projects:latest  # Тег образа для пуша
